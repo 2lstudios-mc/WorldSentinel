@@ -1,0 +1,39 @@
+global_settings:
+  world:
+    firespread: true
+    explosions: true
+    weather: true
+    time: true
+  creatures:
+    spawning: true
+    movement: true
+    damage: true
+  wolfs:
+    spawning: true
+    remove: false
+  endermite:
+    spawning: false
+  bats:
+    spawning: false
+  villager:
+    limit: 4
+  wither:
+    limit: 1
+  armorstand:
+    limit: 8
+  minecart:
+    limit: 4
+  boat:
+    limit: 4
+  spawner:
+    limit: 2
+  beacon:
+    limit: 2
+  hopper:
+    limit: 64
+  dropped_item:
+    limit: 300
+  tileentity:
+    limit: 256
+  players:
+    nostrength: false

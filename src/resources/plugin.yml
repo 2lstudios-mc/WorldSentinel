@@ -1,0 +1,9 @@
+name: WorldSentinel
+main: dev._2lstudios.worldsentinel.WorldSentinel
+version: 0.0.1
+author: 2LS
+commands:
+  region:
+    usage: /region
+  rg:
+    usage: /rg
