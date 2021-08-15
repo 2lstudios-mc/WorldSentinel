@@ -4,12 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>dev._2lstudios</groupId>
-    <artifactId>worldsentinel</artifactId>
+    <artifactId>WorldSentinel</artifactId>
     <version>0.0.1</version>
 
-    <name>worldsentinel</name>
-    <!-- FIXME change it to the project's website -->
-    <url>http://www.example.com</url>
+    <name>WorldSentinel</name>
+    <url>https://github.com/2lstudios-mc/WorldSentinel/</url>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -34,7 +33,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -50,11 +49,10 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>org</groupId>
-            <artifactId>Spigot</artifactId>
-            <version>SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>C:\Mis cosas\Minecraft\Server 1.16.5\spigot-1.16.5.jar</systemPath>
-        </dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.16.5-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+          </dependency>
     </dependencies>
 </project>
