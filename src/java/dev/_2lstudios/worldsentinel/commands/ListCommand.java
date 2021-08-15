@@ -1,17 +1,13 @@
-// 
-// Decompiled by Procyon v0.5.36
-// 
-
 package dev._2lstudios.worldsentinel.commands;
 
-import dev._2lstudios.worldsentinel.region.RegionFlags;
-import java.util.Iterator;
-import dev._2lstudios.worldsentinel.region.Region;
-import org.bukkit.World;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import dev._2lstudios.worldsentinel.region.RegionManager;
 import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+
+import dev._2lstudios.worldsentinel.region.Region;
+import dev._2lstudios.worldsentinel.region.RegionFlags;
+import dev._2lstudios.worldsentinel.region.RegionManager;
 
 class ListCommand {
     ListCommand(final Server server, final RegionManager regionManager, final Player player) {

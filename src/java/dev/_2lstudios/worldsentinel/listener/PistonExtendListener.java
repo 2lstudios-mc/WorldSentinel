@@ -1,18 +1,15 @@
-// 
-// Decompiled by Procyon v0.5.36
-// 
-
 package dev._2lstudios.worldsentinel.listener;
 
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.EventHandler;
-import java.util.Iterator;
-import dev._2lstudios.worldsentinel.region.Region;
 import java.util.List;
+
 import org.bukkit.block.Block;
-import org.bukkit.event.block.BlockPistonExtendEvent;
-import dev._2lstudios.worldsentinel.region.RegionManager;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+
+import dev._2lstudios.worldsentinel.region.Region;
+import dev._2lstudios.worldsentinel.region.RegionManager;
 
 class PistonExtendListener implements Listener {
     private final RegionManager regionManager;

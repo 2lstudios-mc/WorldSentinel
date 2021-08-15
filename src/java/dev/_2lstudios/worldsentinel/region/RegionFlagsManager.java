@@ -1,14 +1,11 @@
-// 
-// Decompiled by Procyon v0.5.36
-// 
-
 package dev._2lstudios.worldsentinel.region;
 
+import java.util.Collection;
 import java.util.Map;
-import java.util.Iterator;
+
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.util.Vector;
-import java.util.Collection;
+
 import dev._2lstudios.worldsentinel.utils.ConfigurationUtil;
 
 class RegionFlagsManager {

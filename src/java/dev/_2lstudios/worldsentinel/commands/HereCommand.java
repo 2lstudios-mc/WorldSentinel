@@ -1,17 +1,14 @@
-// 
-// Decompiled by Procyon v0.5.36
-// 
-
 package dev._2lstudios.worldsentinel.commands;
 
-import dev._2lstudios.worldsentinel.region.Region;
-import java.util.Iterator;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.ChatColor;
 import java.util.Collection;
 import java.util.HashSet;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+
+import dev._2lstudios.worldsentinel.region.Region;
 import dev._2lstudios.worldsentinel.region.RegionManager;
 
 class HereCommand {

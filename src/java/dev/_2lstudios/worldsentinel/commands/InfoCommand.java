@@ -1,23 +1,16 @@
-// 
-// Decompiled by Procyon v0.5.36
-// 
-
 package dev._2lstudios.worldsentinel.commands;
 
-import org.bukkit.Location;
-import dev._2lstudios.worldsentinel.region.RegionManager;
-import java.util.Iterator;
-import dev._2lstudios.worldsentinel.region.RegionFlags;
-import org.bukkit.ChatColor;
-import org.bukkit.util.Vector;
-import java.util.Collection;
 import java.util.Map;
-import dev._2lstudios.worldsentinel.region.Region;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-class InfoCommand {
-    private static final String LINE_SEPARATOR = "&8, ";
+import dev._2lstudios.worldsentinel.region.Region;
+import dev._2lstudios.worldsentinel.region.RegionFlags;
+import dev._2lstudios.worldsentinel.region.RegionManager;
 
+class InfoCommand {
     private void append(final StringBuilder information, final String key, final Object value) {
         if (value instanceof Boolean) {
             information.append("&9" + key + ": " + ((boolean) value ? "&a" : "&c") + value + "&8, ");

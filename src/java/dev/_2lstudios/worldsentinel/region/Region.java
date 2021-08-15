@@ -1,18 +1,15 @@
-// 
-// Decompiled by Procyon v0.5.36
-// 
-
 package dev._2lstudios.worldsentinel.region;
 
-import org.bukkit.Location;
-import java.util.Iterator;
-import org.bukkit.util.Vector;
-import dev._2lstudios.worldsentinel.utils.RegionUtil;
-import java.util.HashSet;
-import dev._2lstudios.worldsentinel.utils.ConfigurationUtil;
 import java.util.Collection;
+import java.util.HashSet;
+
+import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.util.Vector;
+
+import dev._2lstudios.worldsentinel.utils.ConfigurationUtil;
+import dev._2lstudios.worldsentinel.utils.RegionUtil;
 
 public class Region {
     private final BukkitScheduler scheduler;
