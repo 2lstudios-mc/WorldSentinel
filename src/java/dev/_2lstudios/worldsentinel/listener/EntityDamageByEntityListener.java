@@ -22,18 +22,29 @@ class EntityDamageByEntityListener implements Listener {
         this.mainConfiguration = mainConfiguration;
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
-    public void onEntityDamageByEntity(final EntityDamageByEntityEvent event) {
-        final Entity damaged = event.getEntity();
-        Entity damager = event.getDamager();
+    private Entity getRealDamager(final Entity damager) {
         if (damager instanceof Projectile) {
             final ProjectileSource source = ((Projectile) damager).getShooter();
             if (source instanceof Entity) {
-                damager = (Entity) source;
+                return (Entity) source;
             }
         }
+
+        return damager;
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    public void onEntityDamageByEntity(final EntityDamageByEntityEvent event) {
+        final Entity damaged = event.getEntity();
+        final Entity damager = getRealDamager(event.getDamager());
+
+        if (damaged == null || damager == null) {
+            return;
+        }
+
         final Region region = this.regionManager.getRegionInside(damager.getLocation());
         final Region region2 = this.regionManager.getRegionInside(damaged.getLocation());
+
         if (damaged instanceof Player && damager instanceof Player) {
             final boolean regionPvp = region == null || region.getFlags().getBoolean("pvp");
             final boolean region1Pvp = region2 == null || region2.getFlags().getBoolean("pvp");
