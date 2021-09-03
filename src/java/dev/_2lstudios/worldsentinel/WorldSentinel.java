@@ -50,5 +50,6 @@ public class WorldSentinel extends JavaPlugin {
         this.getCommand("region").setExecutor((CommandExecutor) regionCommand);
         WorldSentinelListenerManager.register(this, pluginManager, this.regionManager, this.regionPlayerManager,
                 mainConfiguration);
+        regionPlayerManager.load();
     }
 }

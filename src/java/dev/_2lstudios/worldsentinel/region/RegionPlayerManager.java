@@ -1,5 +1,6 @@
 package dev._2lstudios.worldsentinel.region;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +14,10 @@ public class RegionPlayerManager {
 
     public void addPlayer(final Player player) {
         this.regionPlayers.put(player.getName(), new RegionPlayer());
+    }
+
+    public void load() {
+        Bukkit.getOnlinePlayers().forEach(this::addPlayer);
     }
 
     public void removePlayer(final Player player) {
