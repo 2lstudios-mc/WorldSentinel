@@ -1,5 +1,6 @@
 package dev._2lstudios.worldsentinel.region;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -105,7 +106,13 @@ public class RegionFlags {
         if (value instanceof Collection) {
             return (Collection<String>) value;
         } else if (value instanceof String) {
-            return Collections.singleton((String) value);
+            final String string = (String) value;
+
+            if (string.contains(",")) {
+                return Arrays.asList(string.split(" ,"));
+            } else {
+                return Collections.singleton(string);
+            }
         }
 
         return ConcurrentHashMap.newKeySet();
