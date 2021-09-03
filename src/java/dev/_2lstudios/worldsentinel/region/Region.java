@@ -103,10 +103,6 @@ public class Region {
         return regionsInside;
     }
 
-    public boolean isLocationInside(final Location loc) {
-        return this.isVectorInside(loc.toVector(), loc.getWorld().getName());
-    }
-
     public boolean isVectorInside(final Vector coords, final String worldName) {
         final String world = this.flags.getString("world");
         if (world != null && world.equals(worldName)) {
@@ -115,6 +111,10 @@ public class Region {
             return RegionUtil.isPointInAABB(pos1, pos2, coords);
         }
         return false;
+    }
+
+    public boolean isLocationInside(final Location loc) {
+        return isVectorInside(loc.toVector(), loc.getWorld().getName());
     }
 
     public String getName() {

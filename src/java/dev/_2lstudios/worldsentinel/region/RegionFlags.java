@@ -1,10 +1,11 @@
 package dev._2lstudios.worldsentinel.region;
 
-import java.util.HashSet;
-import java.util.HashMap;
-import org.bukkit.util.Vector;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+
+import org.bukkit.util.Vector;
 
 public class RegionFlags {
     private final Region region;
