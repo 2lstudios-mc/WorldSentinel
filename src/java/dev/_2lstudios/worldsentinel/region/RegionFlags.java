@@ -1,106 +1,124 @@
 package dev._2lstudios.worldsentinel.region;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.util.Vector;
 
 public class RegionFlags {
     private final Region region;
-    private final Map<String, Collection<String>> collections;
-    private final Map<String, Vector> vectors;
-    private final Map<String, String> strings;
-    private final Map<String, Integer> integers;
-    private final Map<String, Boolean> booleans;
+    private final Map<String, Object> flags;
 
     RegionFlags(final Region region) {
-        this.collections = new HashMap<String, Collection<String>>();
-        this.vectors = new HashMap<String, Vector>();
-        this.strings = new HashMap<String, String>();
-        this.integers = new HashMap<String, Integer>();
-        this.booleans = new HashMap<String, Boolean>();
+        this.flags = new ConcurrentHashMap<String, Object>();
         this.region = region;
     }
 
-    public final Map<String, Collection<String>> getCollections() {
-        return this.collections;
+    private float parseFloat(final String value) {
+        try {
+            return Float.parseFloat(value);
+        } catch (final NumberFormatException ex) {
+            // Ignored
+        }
+
+        return 0;
     }
 
-    public final Map<String, Vector> getVectors() {
-        return this.vectors;
+    private int parseInt(final String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (final NumberFormatException ex) {
+            // Ignored
+        }
+
+        return 0;
     }
 
-    public final Map<String, String> getStrings() {
-        return this.strings;
+    public Collection<String> getFlagNames() {
+        return flags.keySet();
     }
 
-    public final Map<String, Integer> getIntegers() {
-        return this.integers;
+    public Collection<Object> getFlags() {
+        return flags.values();
     }
 
-    public final Map<String, Boolean> getBooleans() {
-        return this.booleans;
+    public Object get(final String key) {
+        return flags.getOrDefault(key, null);
     }
 
-    public Collection<String> getCollection(final String key) {
-        this.collections.computeIfAbsent(key, k -> this.collections.put(k, new HashSet<String>()));
-        return this.collections.get(key);
+    public void remove(String args2) {
+        flags.remove(args2);
     }
 
-    public void setCollection(final String key, final Collection<String> value) {
-        this.region.setChanged();
-        this.collections.put(key, value);
+    public void set(final String key, final Object value) {
+        if (value.equals("null")) {
+            remove(key);
+        } else if (value == null || !value.equals(get(key))) {
+            flags.put(key, value);
+            region.setChanged();
+
+            if (key.equals("world") || key.equals("position1") || key.equals("position2")) {
+                region.updateChunks();
+            }
+        }
     }
 
     public Vector getVector(final String key) {
-        return this.vectors.getOrDefault(key, null);
-    }
+        final Object value = get(key);
 
-    public void setVector(final String key, final Vector value) {
-        if (value == null || !value.equals((Object) this.getVector(key))) {
-            this.region.setChanged();
-            this.vectors.put(key, value);
-            if (key.equals("position1") || key.equals("position2")) {
-                this.region.updateChunks();
+        if (value instanceof Vector) {
+            return (Vector) value;
+        }
+
+        if (value instanceof String) {
+            String[] positions = ((String) value).split(",");
+
+            if (positions.length > 2) {
+                return new Vector(parseFloat(positions[0]), parseFloat(positions[1]), parseFloat(positions[2]));
             }
         }
+
+        return null;
+    }
+
+    public Collection<String> getCollection(final String key) {
+        final Object value = get(key);
+
+        if (value instanceof Collection) {
+            return (Collection<String>) value;
+        }
+
+        return ConcurrentHashMap.newKeySet();
     }
 
     public String getString(final String key) {
-        return this.strings.getOrDefault(key, null);
-    }
+        final Object value = get(key);
 
-    public void setString(final String key, final String value) {
-        if (value == null || !value.equals(this.getString(key))) {
-            this.region.setChanged();
-            this.strings.put(key, value);
-            if (key.equals("world")) {
-                this.region.updateChunks();
-            }
+        if (value instanceof String) {
+            return (String) value;
         }
+
+        return String.valueOf(value);
     }
 
     public int getInteger(final String key) {
-        return this.integers.getOrDefault(key, 0);
-    }
+        final Object value = get(key);
 
-    public void setInteger(final String key, final int value) {
-        if (value != this.getInteger(key)) {
-            this.region.setChanged();
-            this.integers.put(key, value);
+        if (value instanceof Integer) {
+            return (int) value;
         }
+
+        return parseInt(String.valueOf(value));
     }
 
     public boolean getBoolean(final String key) {
-        return this.booleans.getOrDefault(key, false);
-    }
+        final Object value = get(key);
 
-    public void setBoolean(final String key, final boolean value) {
-        if (value != this.getBoolean(key)) {
-            this.region.setChanged();
-            this.booleans.put(key, value);
+        if (value instanceof Boolean) {
+            return (boolean) value;
         }
+
+        return String.valueOf(value).equals("true");
     }
 }

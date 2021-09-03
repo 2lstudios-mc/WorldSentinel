@@ -38,7 +38,7 @@ public class RegionCommand implements CommandExecutor {
                     player.sendMessage(ChatColor.RED + "/rg create <region>");
                 } else {
                     final Region region = this.regionManager.createRegion(args[1]);
-                    region.getFlags().setString("world", player.getWorld().getName());
+                    region.getFlags().set("world", player.getWorld().getName());
                     player.sendMessage(ChatColor.GREEN + "Region " + args[1] + " created succesfully!");
                 }
             } else if (args[0].equalsIgnoreCase("delete")) {

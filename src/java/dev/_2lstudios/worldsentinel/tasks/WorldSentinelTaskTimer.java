@@ -1,13 +1,13 @@
 package dev._2lstudios.worldsentinel.tasks;
 
-import dev._2lstudios.worldsentinel.region.Region;
 import org.bukkit.Location;
-import java.util.Iterator;
-import org.bukkit.entity.Player;
-import org.bukkit.World;
-import dev._2lstudios.worldsentinel.region.RegionManager;
-import dev._2lstudios.worldsentinel.configurations.MainConfiguration;
 import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+
+import dev._2lstudios.worldsentinel.configurations.MainConfiguration;
+import dev._2lstudios.worldsentinel.region.Region;
+import dev._2lstudios.worldsentinel.region.RegionManager;
 
 public class WorldSentinelTaskTimer implements Runnable {
     private final Server server;

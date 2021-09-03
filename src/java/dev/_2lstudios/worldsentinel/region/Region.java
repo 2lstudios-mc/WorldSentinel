@@ -29,7 +29,7 @@ public class Region {
         this.regionManager = regionManager;
         this.flags = new RegionFlags(this);
         this.flagsManager = new RegionFlagsManager(configurationUtil, this.flags);
-        this.flags.setString("name", name);
+        this.flags.set("name", name);
         this.setLoading(false);
     }
 

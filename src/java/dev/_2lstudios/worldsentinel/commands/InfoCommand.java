@@ -1,7 +1,5 @@
 package dev._2lstudios.worldsentinel.commands;
 
-import java.util.Map;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -26,21 +24,13 @@ class InfoCommand {
             final RegionFlags flags = region.getFlags();
             final StringBuilder information = new StringBuilder(
                     "&aInformation of region &b" + region.getName() + "&a:&r\n");
-            for (final Map.Entry<String, ?> entry : flags.getCollections().entrySet()) {
-                this.append(information, entry.getKey(), entry.getValue());
+
+            for (final String key : flags.getFlagNames()) {
+                final Object value = flags.get(key);
+
+                append(information, key, value);
             }
-            for (final Map.Entry<String, ?> entry : flags.getVectors().entrySet()) {
-                this.append(information, entry.getKey(), entry.getValue());
-            }
-            for (final Map.Entry<String, ?> entry : flags.getStrings().entrySet()) {
-                this.append(information, entry.getKey(), entry.getValue());
-            }
-            for (final Map.Entry<String, ?> entry : flags.getIntegers().entrySet()) {
-                this.append(information, entry.getKey(), entry.getValue());
-            }
-            for (final Map.Entry<String, ?> entry : flags.getBooleans().entrySet()) {
-                this.append(information, entry.getKey(), entry.getValue());
-            }
+
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', information.toString()));
         } else {
             player.sendMessage(ChatColor.RED + "The region requested wasn't found!");

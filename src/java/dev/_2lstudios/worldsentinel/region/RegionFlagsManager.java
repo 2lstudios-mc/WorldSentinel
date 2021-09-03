@@ -1,7 +1,7 @@
 package dev._2lstudios.worldsentinel.region;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.Collections;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.util.Vector;
@@ -17,100 +17,79 @@ class RegionFlagsManager {
         this.flags = flags;
     }
 
-    private void loadValue(final String key, final Collection<String> value) {
-        this.flags.setCollection(key, value);
+    private Integer parseInteger(final String string, final Integer def) {
+        try {
+            return Integer.parseInt(string);
+        } catch (NumberFormatException ex) {
+            // Ignored
+        }
+
+        return def;
     }
 
-    private void loadValue(final String key, final Vector value) {
-        this.flags.setVector(key, value);
-    }
-
-    private void loadValue(final String key, final String value) {
-        if (key.startsWith("position")) {
+    private void loadValue(final String key, final Object value) {
+        if (value instanceof String && (key.equals("members") || key.equals("owners"))) {
+            flags.set(key, Collections.singleton((String) value));
+        } else if (key.startsWith("position") && value instanceof String) {
             String[] positions = ((String) value).split(",");
 
             if (positions.length > 2) {
-                loadValue(key, new Vector(Float.parseFloat(positions[0]), Float.parseFloat(positions[1]), Float.parseFloat(positions[2])));
+                flags.set(key, new Vector(Float.parseFloat(positions[0]), Float.parseFloat(positions[1]),
+                        Float.parseFloat(positions[2])));
             }
+        } else if (key.startsWith("priority") && !(value instanceof Integer)) {
+            flags.set(key, parseInteger(String.valueOf(value), 0));
+        } else if (!(value instanceof Integer) && value.equals("true") || value.equals("false")) {
+            flags.set(key, Boolean.valueOf(String.valueOf(value)));
         } else {
-            this.flags.setString(key, value);
+            flags.set(key, value);
         }
-    }
-
-    private void loadValue(final String key, final int value) {
-        this.flags.setInteger(key, value);
-    }
-
-    private void loadValue(final String key, final boolean value) {
-        this.flags.setBoolean(key, value);
     }
 
     void load() {
         final String name = this.flags.getString("name");
         final YamlConfiguration config = this.configurationUtil
                 .getConfiguration("%datafolder%/regions/" + name + ".yml");
+
         for (final String key : config.getKeys(false)) {
-            if ("name".equals(key)) {
-                continue;
-            }
-            final Object value = config.get(key);
-            if (value instanceof Collection) {
-                this.loadValue(key, (Collection<String>) value);
-            } else if (value instanceof Vector) {
-                this.loadValue(key, (Vector) value);
-            } else if (value instanceof String) {
-                this.loadValue(key, (String) value);
-            } else if (value instanceof Integer) {
-                this.loadValue(key, (int) value);
-            } else {
-                if (!(value instanceof Boolean)) {
-                    continue;
-                }
-                this.loadValue(key, (boolean) value);
-            }
-        }
-    }
+            if (!key.equals("name")) {
+                final Object value = config.get(key);
 
-    private void setValue(final YamlConfiguration config, final String path, final Boolean value) {
-        if (Boolean.TRUE.equals(value)) {
-            config.set(path, (Object) value);
-        }
-    }
-
-    private void setValue(final YamlConfiguration config, final String path, final Collection<?> value) {
-        if (value != null && !value.isEmpty()) {
-            config.set(path, (Object) value);
+                loadValue(key, value);
+            }
         }
     }
 
     private void setValue(final YamlConfiguration config, final String path, final Object value) {
         if (value != null) {
-            config.set(path, value);
+            if (value instanceof Collection) {
+                final Collection<?> collection = (Collection<?>) value;
+
+                if (!collection.isEmpty()) {
+                    config.set(path, collection);
+                }
+            } else if (value instanceof Integer) {
+                config.set(path, (int) value);
+            } else if (value instanceof Vector) {
+                config.set(path, (Vector) value);
+            } else {
+                config.set(path, value);
+            }
         }
     }
 
     void save() {
-        final String name = this.flags.getString("name");
+        final String name = flags.getString("name");
         final YamlConfiguration config = new YamlConfiguration();
-        for (final Map.Entry<String, Collection<String>> entry : this.flags.getCollections().entrySet()) {
-            this.setValue(config, entry.getKey(), entry.getValue());
-        }
-        for (final Map.Entry<String, Vector> entry2 : this.flags.getVectors().entrySet()) {
-            this.setValue(config, entry2.getKey(), entry2.getValue());
-        }
-        for (final Map.Entry<String, String> entry3 : this.flags.getStrings().entrySet()) {
-            final String key = entry3.getKey();
-            if ("name".equals(key)) {
-                continue;
+
+        for (final String key : flags.getFlagNames()) {
+            if (!key.equals("name")) {
+                final Object value = flags.get(key);
+
+                this.setValue(config, key, value);
             }
-            this.setValue(config, key, entry3.getValue());
         }
-        for (final Map.Entry<String, Integer> entry4 : this.flags.getIntegers().entrySet()) {
-            this.setValue(config, entry4.getKey(), entry4.getValue());
-        }
-        for (final Map.Entry<String, Boolean> entry5 : this.flags.getBooleans().entrySet()) {
-            this.setValue(config, entry5.getKey(), entry5.getValue());
-        }
+
         this.configurationUtil.saveConfigurationSync(config, "%datafolder%/regions/" + name + ".yml");
     }
 }

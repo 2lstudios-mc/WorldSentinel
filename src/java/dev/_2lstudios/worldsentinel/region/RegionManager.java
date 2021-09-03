@@ -163,9 +163,6 @@ public class RegionManager {
     }
 
     private void removeChunkRegion(final Collection<String> regionChunks, final Region region) {
-        if (region.getName().equals("PW401945")) {
-            System.out.println("REMOVED REGION FROM NO CHUNK");
-        }
         this.noChunkRegions.remove(region.getName());
         if (regionChunks == null || regionChunks.isEmpty()) {
             return;
@@ -249,21 +246,12 @@ public class RegionManager {
                     }
                 }
 
-                if (region.getName().equals("PW401945")) {
-                    System.out.println("REGION IS CHUNK");
-                }
-
                 region.setChunks(chunks);
                 return;
             }
         }
 
         region.setChunks(null);
-
-        if (region.getName().equals("PW401945")) {
-            System.out.println("REGION IS NO CHUNK");
-        }
-
         this.noChunkRegions.add(region.getName());
     }
 }
