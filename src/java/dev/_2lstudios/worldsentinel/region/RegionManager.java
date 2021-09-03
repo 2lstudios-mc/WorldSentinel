@@ -5,13 +5,12 @@ import org.bukkit.util.Vector;
 import java.util.stream.Collectors;
 import org.bukkit.Location;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import org.bukkit.scheduler.BukkitScheduler;
 import java.io.File;
-import java.util.HashSet;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
@@ -27,10 +26,10 @@ public class RegionManager {
     private final Collection<String> noChunkRegions;
 
     public RegionManager(final Plugin plugin, final ConfigurationUtil configurationUtil) {
-        this.regionsMap = new HashMap<String, Region>();
-        this.worldChunkMap = new HashMap<String, Map<String, Collection<String>>>();
-        this.changedRegions = new HashSet<String>();
-        this.noChunkRegions = new HashSet<String>();
+        this.regionsMap = new ConcurrentHashMap<String, Region>();
+        this.worldChunkMap = new ConcurrentHashMap<String, Map<String, Collection<String>>>();
+        this.changedRegions = ConcurrentHashMap.newKeySet();
+        this.noChunkRegions = ConcurrentHashMap.newKeySet();
         this.plugin = plugin;
         this.server = plugin.getServer();
         this.configurationUtil = configurationUtil;
@@ -63,10 +62,6 @@ public class RegionManager {
                 }
             }
         }, 100L, 100L);
-    }
-
-    private boolean exists(final Region region) {
-        return this.regionsMap.containsValue(region);
     }
 
     public Region createRegion(final String regionName) {
@@ -145,7 +140,7 @@ public class RegionManager {
 
     public Collection<String> getNearRegions(final Location location, final int distance) {
         final String worldName = location.getWorld().getName();
-        final Collection<String> nearRegions = new HashSet<String>();
+        final Collection<String> nearRegions = ConcurrentHashMap.newKeySet();
         final int[] chunkCoords = this.getChunkCoords(location);
         final int chunkDistance = distance / 16;
         final int x = chunkCoords[0];
@@ -168,6 +163,9 @@ public class RegionManager {
     }
 
     private void removeChunkRegion(final Collection<String> regionChunks, final Region region) {
+        if (region.getName().equals("PW401945")) {
+            System.out.println("REMOVED REGION FROM NO CHUNK");
+        }
         this.noChunkRegions.remove(region.getName());
         if (regionChunks == null || regionChunks.isEmpty()) {
             return;
@@ -222,39 +220,50 @@ public class RegionManager {
         final Vector position2 = regionFlags.getVector("position2");
         final String worldName = regionFlags.getString("world");
 
-        this.removeChunkRegion(regionChunks, region);
-        if (this.exists(region)) {
-            if (position1 != null && position2 != null && worldName != null) {
-                final World world = this.server.getWorld(worldName);
-                if (world != null) {
-                    final String regionName = region.getName();
-                    final Collection<String> chunks = new HashSet<String>();
-                    final Location location1 = position1.toLocation(world);
-                    final Location location2 = position2.toLocation(world);
-                    final int[] chunk1 = this.getChunkCoords(location1);
-                    final int[] chunk2 = this.getChunkCoords(location2);
-                    final int minChunkX = Math.min(chunk1[0], chunk2[0]);
-                    final int minChunkZ = Math.min(chunk1[1], chunk2[1]);
-                    final int maxChunkX = Math.max(chunk1[0], chunk2[0]);
-                    final int maxChunkZ = Math.max(chunk1[1], chunk2[1]);
-                    for (int x = minChunkX; x <= maxChunkX; ++x) {
-                        for (int z = minChunkZ; z <= maxChunkZ; ++z) {
-                            final String chunkId = this.getChunkId(x, z);
-                            final Map<String, Collection<String>> chunkMap = this.worldChunkMap.getOrDefault(worldName,
-                                    new HashMap<String, Collection<String>>());
-                            final Collection<String> regions = chunkMap.getOrDefault(chunkId, new HashSet<String>());
-                            regions.add(regionName);
-                            chunkMap.put(chunkId, regions);
-                            this.worldChunkMap.put(worldName, chunkMap);
-                            chunks.add(chunkId);
-                        }
+        removeChunkRegion(regionChunks, region);
+
+        if (position1 != null && position2 != null && worldName != null) {
+            final World world = this.server.getWorld(worldName);
+
+            if (world != null) {
+                final String regionName = region.getName();
+                final Collection<String> chunks = ConcurrentHashMap.newKeySet();
+                final Location location1 = position1.toLocation(world);
+                final Location location2 = position2.toLocation(world);
+                final int[] chunk1 = this.getChunkCoords(location1);
+                final int[] chunk2 = this.getChunkCoords(location2);
+                final int minChunkX = Math.min(chunk1[0], chunk2[0]);
+                final int minChunkZ = Math.min(chunk1[1], chunk2[1]);
+                final int maxChunkX = Math.max(chunk1[0], chunk2[0]);
+                final int maxChunkZ = Math.max(chunk1[1], chunk2[1]);
+                for (int x = minChunkX; x <= maxChunkX; ++x) {
+                    for (int z = minChunkZ; z <= maxChunkZ; ++z) {
+                        final String chunkId = this.getChunkId(x, z);
+                        final Map<String, Collection<String>> chunkMap = this.worldChunkMap.getOrDefault(worldName,
+                                new ConcurrentHashMap<String, Collection<String>>());
+                        final Collection<String> regions = chunkMap.getOrDefault(chunkId, ConcurrentHashMap.newKeySet());
+                        regions.add(regionName);
+                        chunkMap.put(chunkId, regions);
+                        this.worldChunkMap.put(worldName, chunkMap);
+                        chunks.add(chunkId);
                     }
-                    region.setChunks(chunks);
-                    return;
                 }
+
+                if (region.getName().equals("PW401945")) {
+                    System.out.println("REGION IS CHUNK");
+                }
+
+                region.setChunks(chunks);
+                return;
             }
-            region.setChunks(null);
-            this.noChunkRegions.add(region.getName());
         }
+
+        region.setChunks(null);
+
+        if (region.getName().equals("PW401945")) {
+            System.out.println("REGION IS NO CHUNK");
+        }
+
+        this.noChunkRegions.add(region.getName());
     }
 }

@@ -26,7 +26,15 @@ class RegionFlagsManager {
     }
 
     private void loadValue(final String key, final String value) {
-        this.flags.setString(key, value);
+        if (key.startsWith("position")) {
+            String[] positions = ((String) value).split(",");
+
+            if (positions.length > 2) {
+                loadValue(key, new Vector(Float.parseFloat(positions[0]), Float.parseFloat(positions[1]), Float.parseFloat(positions[2])));
+            }
+        } else {
+            this.flags.setString(key, value);
+        }
     }
 
     private void loadValue(final String key, final int value) {
