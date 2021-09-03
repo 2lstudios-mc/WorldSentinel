@@ -1,6 +1,7 @@
 package dev._2lstudios.worldsentinel.region;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,14 +26,14 @@ public class RegionFlags {
         return 0;
     }
 
-    private int parseInt(final String value) {
+    private Integer parseInteger(final String string, final Integer def) {
         try {
-            return Integer.parseInt(value);
-        } catch (final NumberFormatException ex) {
+            return Integer.parseInt(string);
+        } catch (NumberFormatException ex) {
             // Ignored
         }
 
-        return 0;
+        return def;
     }
 
     public Collection<String> getFlagNames() {
@@ -55,7 +56,23 @@ public class RegionFlags {
         if (value.equals("null")) {
             remove(key);
         } else if (value == null || !value.equals(get(key))) {
-            flags.put(key, value);
+            if (key.startsWith("position") && value instanceof String) {
+                String[] positions = ((String) value).split(",");
+
+                if (positions.length > 2) {
+                    flags.put(key, new Vector(Float.parseFloat(positions[0]), Float.parseFloat(positions[1]),
+                            Float.parseFloat(positions[2])));
+                } else {
+                    flags.put(key, value);
+                }
+            } else if (key.startsWith("priority") && !(value instanceof Integer)) {
+                flags.put(key, parseInteger(String.valueOf(value), 0));
+            } else if (!(value instanceof Integer) && value.equals("true") || value.equals("false")) {
+                flags.put(key, Boolean.valueOf(String.valueOf(value)));
+            } else {
+                flags.put(key, value);
+            }
+
             region.setChanged();
 
             if (key.equals("world") || key.equals("position1") || key.equals("position2")) {
@@ -87,6 +104,8 @@ public class RegionFlags {
 
         if (value instanceof Collection) {
             return (Collection<String>) value;
+        } else if (value instanceof String) {
+            return Collections.singleton((String) value);
         }
 
         return ConcurrentHashMap.newKeySet();
@@ -109,7 +128,7 @@ public class RegionFlags {
             return (int) value;
         }
 
-        return parseInt(String.valueOf(value));
+        return parseInteger(String.valueOf(value), 0);
     }
 
     public boolean getBoolean(final String key) {

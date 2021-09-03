@@ -17,35 +17,6 @@ class RegionFlagsManager {
         this.flags = flags;
     }
 
-    private Integer parseInteger(final String string, final Integer def) {
-        try {
-            return Integer.parseInt(string);
-        } catch (NumberFormatException ex) {
-            // Ignored
-        }
-
-        return def;
-    }
-
-    private void loadValue(final String key, final Object value) {
-        if (value instanceof String && (key.equals("members") || key.equals("owners"))) {
-            flags.set(key, Collections.singleton((String) value));
-        } else if (key.startsWith("position") && value instanceof String) {
-            String[] positions = ((String) value).split(",");
-
-            if (positions.length > 2) {
-                flags.set(key, new Vector(Float.parseFloat(positions[0]), Float.parseFloat(positions[1]),
-                        Float.parseFloat(positions[2])));
-            }
-        } else if (key.startsWith("priority") && !(value instanceof Integer)) {
-            flags.set(key, parseInteger(String.valueOf(value), 0));
-        } else if (!(value instanceof Integer) && value.equals("true") || value.equals("false")) {
-            flags.set(key, Boolean.valueOf(String.valueOf(value)));
-        } else {
-            flags.set(key, value);
-        }
-    }
-
     void load() {
         final String name = this.flags.getString("name");
         final YamlConfiguration config = this.configurationUtil
@@ -55,7 +26,7 @@ class RegionFlagsManager {
             if (!key.equals("name")) {
                 final Object value = config.get(key);
 
-                loadValue(key, value);
+                flags.set(key, value);
             }
         }
     }
