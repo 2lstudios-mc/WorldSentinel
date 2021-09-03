@@ -2,7 +2,6 @@ package dev._2lstudios.worldsentinel.region;
 
 import org.bukkit.World;
 import org.bukkit.util.Vector;
-// import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import org.bukkit.Location;
 import java.util.Collections;
@@ -10,9 +9,10 @@ import java.util.Iterator;
 import org.bukkit.scheduler.BukkitScheduler;
 import java.io.File;
 import java.util.HashSet;
-import java.util.HashMap;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 import dev._2lstudios.worldsentinel.utils.ConfigurationUtil;
@@ -27,8 +27,8 @@ public class RegionManager {
     private final Collection<String> noChunkRegions;
 
     public RegionManager(final Plugin plugin, final ConfigurationUtil configurationUtil) {
-        this.regionsMap = new HashMap<String, Region>();
-        this.worldChunkMap = new HashMap<String, Map<String, Collection<String>>>();
+        this.regionsMap = new ConcurrentHashMap<String, Region>();
+        this.worldChunkMap = new ConcurrentHashMap<String, Map<String, Collection<String>>>();
         this.changedRegions = new HashSet<String>();
         this.noChunkRegions = new HashSet<String>();
         this.plugin = plugin;
@@ -237,7 +237,7 @@ public class RegionManager {
                         for (int z = minChunkZ; z <= maxChunkZ; ++z) {
                             final String chunkId = this.getChunkId(x, z);
                             final Map<String, Collection<String>> chunkMap = this.worldChunkMap.getOrDefault(worldName,
-                                    new HashMap<String, Collection<String>>());
+                                    new ConcurrentHashMap<String, Collection<String>>());
                             final Collection<String> regions = chunkMap.getOrDefault(chunkId, new HashSet<String>());
                             regions.add(regionName);
                             chunkMap.put(chunkId, regions);
