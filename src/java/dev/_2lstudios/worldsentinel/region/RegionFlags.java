@@ -116,7 +116,7 @@ public class RegionFlags {
     public Collection<String> getCollection(final String key) {
         final Object value = get(key);
 
-        if (value instanceof Collection) {
+        if (value instanceof Collection<?>) {
             return (Collection<String>) value;
         } else if (value instanceof String) {
             return toCollection((String) value);

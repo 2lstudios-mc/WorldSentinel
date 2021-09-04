@@ -33,7 +33,7 @@ class RegionFlagsManager {
 
     private void setValue(final YamlConfiguration config, final String path, final Object value) {
         if (value != null) {
-            if (value instanceof Collection) {
+            if (value instanceof Collection<?>) {
                 final Collection<?> collection = (Collection<?>) value;
 
                 if (!collection.isEmpty()) {
