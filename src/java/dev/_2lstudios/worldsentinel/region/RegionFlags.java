@@ -2,7 +2,6 @@ package dev._2lstudios.worldsentinel.region;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -53,11 +52,25 @@ public class RegionFlags {
         flags.remove(args2);
     }
 
+    private Collection<String> toCollection(final String text) {
+        final Collection<String> collection = ConcurrentHashMap.newKeySet();
+
+        if (text.contains(" ,")) {
+            collection.addAll(Arrays.asList(text.split(" ,")));
+        } else {
+            collection.add(text);
+        }
+
+        return collection;
+    }
+
     public void set(final String key, final Object value) {
         if (value.equals("null")) {
             remove(key);
         } else if (value == null || !value.equals(get(key))) {
-            if (key.startsWith("position") && value instanceof String) {
+            if (value instanceof String && (key.equals("members") || key.equals("owners"))) {
+                flags.put(key, toCollection((String) value));
+            } else if (key.startsWith("position") && value instanceof String) {
                 String[] positions = ((String) value).split(",");
 
                 if (positions.length > 2) {
@@ -66,7 +79,7 @@ public class RegionFlags {
                 } else {
                     flags.put(key, value);
                 }
-            } else if (key.startsWith("priority") && !(value instanceof Integer)) {
+            } else if (key.equals("priority") && !(value instanceof Integer)) {
                 flags.put(key, parseInteger(String.valueOf(value), 0));
             } else if (!(value instanceof Integer) && value.equals("true") || value.equals("false")) {
                 flags.put(key, Boolean.valueOf(String.valueOf(value)));
@@ -106,13 +119,7 @@ public class RegionFlags {
         if (value instanceof Collection) {
             return (Collection<String>) value;
         } else if (value instanceof String) {
-            final String string = (String) value;
-
-            if (string.contains(",")) {
-                return Arrays.asList(string.split(" ,"));
-            } else {
-                return Collections.singleton(string);
-            }
+            return toCollection((String) value);
         }
 
         return ConcurrentHashMap.newKeySet();
