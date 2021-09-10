@@ -31,68 +31,86 @@ class FlagCommand {
     }
 
     FlagCommand(final RegionManager regionManager, final String[] args, final Player player) {
-        if (args.length <= 4) {
-            player.sendMessage(ChatColor.RED + "/rg flag <set/add/remove> <region> <flag> <value>");
-        } else {
-            final Region region = regionManager.getRegion(args[2]);
-            final String args2 = args[3];
-            final String args3 = args[4];
+        if (args.length > 2) {
+            final Region region = regionManager.getRegion(args[1]);
+            final String flag = args[2];
+
             if (region == null) {
                 player.sendMessage(ChatColor.RED + "The specified Region doesnt exist.");
             } else {
                 final RegionFlags flags = region.getFlags();
-                if (args[1].equals("set")) {
-                    final Integer number = parseInteger(args2, null);
-                    final Boolean bool = parseBoolean(args2, null);
 
-                    if (args2.startsWith("position")) {
+                if (args.length > 3) {
+                    final String value = args[3];
 
-                    } else if (number != null) {
-                        flags.set(args2, (int) number);
-                    } else if (bool != null) {
-                        flags.set(args2, (boolean) bool);
-                    } else {
-                        flags.set(args2, args3);
-                    }
-                } else if (args[1].equals("add")) {
-                    Collection<String> collection = flags.getCollection(args2);
+                    if (args.length > 4) {
+                        Collection<String> collection = flags.getCollection(flag);
 
-                    if (collection == null) {
-                        collection = ConcurrentHashMap.newKeySet();
-                    }
-
-                    if (!collection.contains(args3)) {
-                        collection.add(args3);
-                        flags.set(args2, collection);
-                        player.sendMessage(
-                                ChatColor.GREEN + "Added '" + args3 + "' to the collection '" + args2 + "'!");
-                    } else {
-                        player.sendMessage(
-                                ChatColor.RED + "The collection '" + args2 + "' already contains '" + args3 + "'!");
-                    }
-                } else if (args[1].equals("remove")) {
-                    if (flags.getFlagNames().contains(args2)) {
-                        final Collection<String> collection = flags.getCollection(args2);
-                        if (collection.contains(args3)) {
-                            collection.remove(args3);
-
-                            if (collection.isEmpty()) {
-                                flags.remove(args2);
+                        if (args[4].equals("-a")) {
+                            if (collection == null) {
+                                collection = ConcurrentHashMap.newKeySet();
                             }
 
-                            player.sendMessage(
-                                    ChatColor.GREEN + "Removed '" + args3 + "' from the collection '" + args2 + "'!");
+                            if (!collection.contains(value)) {
+                                collection.add(value);
+                                flags.set(flag, collection);
+                                player.sendMessage(
+                                        ChatColor.GREEN + "Added '" + value + "' to the collection '" + flag + "'!");
+                            } else {
+                                player.sendMessage(ChatColor.RED + "The collection '" + flag + "' already contains '"
+                                        + value + "'!");
+                            }
+                        } else if (args[4].equals("-r")) {
+                            if (flags.getFlagNames().contains(flag)) {
+                                if (collection.contains(value)) {
+                                    collection.remove(value);
+
+                                    if (collection.isEmpty()) {
+                                        flags.remove(flag);
+                                    }
+
+                                    player.sendMessage(ChatColor.GREEN + "Removed '" + value + "' from the collection '"
+                                            + flag + "'!");
+                                } else {
+                                    player.sendMessage(ChatColor.RED + "The collection '" + flag + "' doesn't contain '"
+                                            + value + "'!");
+                                }
+                            } else {
+                                player.sendMessage(
+                                        ChatColor.RED + "The region doesn't contain the flag '" + flag + "'!");
+                            }
                         } else {
-                            player.sendMessage(
-                                    ChatColor.RED + "The collection '" + args2 + "' doesn't contain '" + args3 + "'!");
+                            player.sendMessage(ChatColor.RED + "Invalid argument '" + args[4] + "'!");
                         }
                     } else {
-                        player.sendMessage(ChatColor.RED + "The region doesn't contain the flag '" + args2 + "'!");
+                        final Integer number = parseInteger(flag, null);
+                        final Boolean bool = parseBoolean(flag, null);
+
+                        if (flag.startsWith("position")) {
+                            flags.set(flag, player.getLocation().toVector());
+                        } else if (number != null) {
+                            flags.set(flag, (int) number);
+                        } else if (bool != null) {
+                            flags.set(flag, (boolean) bool);
+                        } else {
+                            flags.set(flag, value);
+                        }
+
+                        player.sendMessage(
+                                ChatColor.GREEN + "Added '" + flag + "' flag to '" + region.getName() + "'!");
                     }
                 } else {
-                    player.sendMessage(ChatColor.RED + "/rg flag <set/add/remove> <flag> <value>");
+                    if (flags.getFlagNames().contains(flag)) {
+                        flags.remove(flag);
+                        player.sendMessage(
+                                ChatColor.GREEN + "Removed '" + flag + "' flag from '" + region.getName() + "'!");
+                    } else {
+                        player.sendMessage(ChatColor.RED + "The region doesn't contain the flag '" + flag + "'!");
+                    }
                 }
             }
+        } else {
+            player.sendMessage(ChatColor.RED + "/rg flag <flag> [value] [-a-r]");
         }
     }
 }
