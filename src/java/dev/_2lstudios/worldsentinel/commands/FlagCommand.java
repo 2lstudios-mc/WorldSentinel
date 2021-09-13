@@ -83,8 +83,8 @@ class FlagCommand {
                             player.sendMessage(ChatColor.RED + "Invalid argument '" + args[4] + "'!");
                         }
                     } else {
-                        final Integer number = parseInteger(flag, null);
-                        final Boolean bool = parseBoolean(flag, null);
+                        final Integer number = parseInteger(value, null);
+                        final Boolean bool = parseBoolean(value, null);
 
                         if (flag.startsWith("position")) {
                             flags.set(flag, player.getLocation().toVector());
@@ -97,7 +97,7 @@ class FlagCommand {
                         }
 
                         player.sendMessage(
-                                ChatColor.GREEN + "Added '" + flag + "' flag to '" + region.getName() + "'!");
+                                ChatColor.GREEN + "Setted '" + flag + "' flag to '" + value + "'!");
                     }
                 } else {
                     if (flags.getFlagNames().contains(flag)) {
