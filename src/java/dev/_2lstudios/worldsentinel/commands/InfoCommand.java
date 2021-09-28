@@ -19,7 +19,7 @@ class InfoCommand {
                 final StringBuilder entries = new StringBuilder();
 
                 for (final Object entry : (Collection<?>) value) {
-                    if (entries.isEmpty()) {
+                    if (entries.length() <= 0) {
                         entries.append("&7[&b" + entry);
                     } else {
                         entries.append(", " + entry);
