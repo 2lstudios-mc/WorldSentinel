@@ -1,5 +1,7 @@
 package dev._2lstudios.worldsentinel.commands;
 
+import java.util.Collection;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -10,12 +12,24 @@ import dev._2lstudios.worldsentinel.region.RegionManager;
 
 class InfoCommand {
     private void append(final StringBuilder information, final String key, final Object value) {
-        if (value instanceof Boolean) {
-            information.append("&9" + key + ": " + ((boolean) value ? "&a" : "&c") + value + "&8, ");
-        } else if (value == null) {
-            information.append("&9" + key + ": " + "&7" + value + "&8, ");
-        } else {
-            information.append("&9" + key + ": " + "&a" + value + "&8, ");
+        if (value != null) {
+            if (value instanceof Boolean) {
+                information.append("&9" + key + ": " + ((boolean) value ? "&a" : "&c") + value + "&8, ");
+            } else if (value instanceof Collection<?>) {
+                final StringBuilder entries = new StringBuilder();
+
+                for (final Object entry : (Collection<?>) value) {
+                    if (entries.isEmpty()) {
+                        entries.append("&7[&b" + entry);
+                    } else {
+                        entries.append(", " + entry);
+                    }
+                }
+
+                information.append("&9" + key + ": " + entries.toString() + "&7]&8, ");
+            } else {
+                information.append("&9" + key + ": " + "&a" + value + "&8, ");
+            }
         }
     }
 
@@ -41,10 +55,12 @@ class InfoCommand {
         if (args.length <= 1) {
             final Location location = player.getLocation();
             final Region region = regionManager.getRegionInside(location);
-            this.showInfo(player, region);
+
+            showInfo(player, region);
         } else {
             final Region region2 = regionManager.getRegion(args[1]);
-            this.showInfo(player, region2);
+
+            showInfo(player, region2);
         }
     }
 }

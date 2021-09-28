@@ -65,11 +65,11 @@ public class RegionFlags {
     }
 
     public void set(final String key, final Object value) {
-        if (value.equals("null")) {
+        if (value == null || value.equals("null")) {
             remove(key);
-        } else if (value == null || !value.equals(get(key))) {
-            if (value instanceof String && (key.equals("members") || key.equals("owners"))) {
-                flags.put(key, toCollection((String) value));
+        } else if (!value.equals(get(key))) {
+            if (key.equals("members") || key.equals("owners")) {
+                flags.put(key, toCollection(String.valueOf(value)));
             } else if (key.startsWith("position") && value instanceof String) {
                 String[] positions = ((String) value).split(",");
 
