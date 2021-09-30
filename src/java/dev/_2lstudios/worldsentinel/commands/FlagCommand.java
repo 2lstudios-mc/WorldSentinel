@@ -110,7 +110,7 @@ class FlagCommand {
                 }
             }
         } else {
-            player.sendMessage(ChatColor.RED + "/rg flag <flag> [value] [-a-r]");
+            player.sendMessage(ChatColor.RED + "/rg flag <flag> <region> [value] [-a-r]");
         }
     }
 }
