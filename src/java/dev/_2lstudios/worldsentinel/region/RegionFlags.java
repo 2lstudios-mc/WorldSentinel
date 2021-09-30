@@ -56,9 +56,9 @@ public class RegionFlags {
         final Collection<String> collection = ConcurrentHashMap.newKeySet();
 
         if (text.contains(" ,")) {
-            collection.addAll(Arrays.asList(text.replace("[", "").replace("]", "").split(" ,")));
+            collection.addAll(Arrays.asList(text.replace("[", "").replace("]", "").replace(" ", "").split(",")));
         } else {
-            collection.add(text);
+            collection.add(text.replace("[", "").replace("]", "").replace(" ", ""));
         }
 
         return collection;
